@@ -13,6 +13,23 @@ def run(cmd, cwd=None, env=None, use_sudo=False):
         print(f"❌ Command failed: {' '.join(final_cmd)}")
         sys.exit(1)
 
+# 0. Install build dependencies
+print("=== [0] Installing build dependencies ===")
+run([
+    "apt-get", "update"
+], use_sudo=True)
+
+run([
+    "apt-get", "install", "-y",
+    "git", "build-essential", "libtool", "automake", "autoconf",
+    "libxml2-dev", "libyajl-dev", "pkgconf", "zlib1g-dev",
+    "libcurl4-gnutls-dev", "libgeoip-dev", "liblmdb-dev"
+], use_sudo=True)
+
+run([
+    "apt-get", "install", "-y", "libpcre2-dev"
+], use_sudo=True)
+
 # 1. Clone ModSecurity
 run(["git", "clone", "https://github.com/SpiderLabs/ModSecurity"], cwd=os.path.expanduser("~"))
 
