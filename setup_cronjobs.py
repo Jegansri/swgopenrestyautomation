@@ -14,7 +14,7 @@ def run_command(command, shell=True):
         return False, e.stdout, e.stderr
 
 def add_cronjobs():
-    """Add cronjobs for WAF rules and GeoLite2 database updates"""
+    """Add cronjobs for WAF rules, GeoLite2 database updates, and log clearing"""
 
     # Define the cronjob entries
     cronjobs = [
@@ -23,6 +23,9 @@ def add_cronjobs():
         "",
         "# GeoLite2 Database Update - Every Saturday at 7:30 AM IST",
         "30 7 * * 6 /usr/bin/python3 /opt/country_mmdb.py",
+        "",
+        "# Clear Logs - Every Saturday at 7:30 AM IST",
+        "30 7 * * 6 /usr/bin/python3 /opt/clear_logs.py",
         ""
     ]
 
@@ -43,6 +46,8 @@ def add_cronjobs():
         print("⚠️  WAF rules cronjob already exists")
     if "/opt/country_mmdb.py" in current_crontab:
         print("⚠️  GeoLite2 database cronjob already exists")
+    if "/opt/clear_logs.py" in current_crontab:
+        print("⚠️  Clear logs cronjob already exists")
 
     # Add new cronjobs if they don't exist
     new_crontab = current_crontab
@@ -54,6 +59,10 @@ def add_cronjobs():
     if "/opt/country_mmdb.py" not in current_crontab:
         new_crontab += "\n" + cronjobs[3] + "\n" + cronjobs[4] + "\n"
         print("✅ Added GeoLite2 database update cronjob")
+
+    if "/opt/clear_logs.py" not in current_crontab:
+        new_crontab += "\n" + cronjobs[6] + "\n" + cronjobs[7] + "\n"
+        print("✅ Added clear logs cronjob")
 
     # Write the new crontab
     with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
@@ -120,6 +129,7 @@ def main():
     print("\nScheduled jobs:")
     print("• WAF Rules Update: Every Sunday at 7:30 AM IST")
     print("• GeoLite2 Database Update: Every Saturday at 7:30 AM IST")
+    print("• Clear Logs: Every Saturday at 7:30 AM IST")
 
 if __name__ == "__main__":
     main()
